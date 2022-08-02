@@ -5,8 +5,15 @@ defmodule PayrollWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", PayrollWeb do
-    pipe_through :api
+  scope "/", PayrollWeb do
+    scope "/users" do
+      pipe_through :api
+
+      get "/get", UsersController, :get
+      put "/update", UsersController, :update
+      post "/create", UsersController, :create
+      delete "/delete", UsersController, :delete
+    end
   end
 
   # Enables LiveDashboard only for development
