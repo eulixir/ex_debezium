@@ -8,7 +8,7 @@ import Config
 config :payroll, Payroll.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
+  hostname: "payroll_db",
   database: "payroll_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
@@ -16,7 +16,7 @@ config :payroll, Payroll.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :payroll, PayrollWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [port: 4002],
   secret_key_base: "NZX/UChTzT3JOnL66CYeAQq4qTbhoWGirH6+PcwVTnDhv5Av8YykjwP8co5jZlST",
   server: false
 

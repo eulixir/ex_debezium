@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  payroll:
+    build:
+      context: .
+      target: build
+      dockerfile: Dockerfile
+    command: mix phx.server
+    restart: unless-stopped
+    ports:
+      - "4002:4000"
+    expose:
+      - "4002"
+
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - .:/app
+      - payroll_build:/app/_build/
+      - payroll_deps:/app/deps
+    env_file:
+      - .env
+    networks:
+      - payroll_network
+
+  db:
+    container_name: payroll_db
+    restart: always
+    image: postgres:13.5
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: payroll_dev
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_payroll:/var/lib/postgresql/data/
+      - ./dump:/home/
+    networks:
+      - payroll_network
+
+networks:
+  payroll_network:
+    name: payroll_network
+
+volumes:
+  payroll_build:
+  payroll_deps:
+  postgres_payroll:

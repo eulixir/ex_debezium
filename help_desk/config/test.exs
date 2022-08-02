@@ -8,7 +8,7 @@ import Config
 config :help_desk, HelpDesk.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
+  hostname: "help_desk_db",
   database: "help_desk_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
@@ -16,7 +16,7 @@ config :help_desk, HelpDesk.Repo,
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :help_desk, HelpDeskWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
+  http: [port: 4002],
   secret_key_base: "6E8Y7yiC9d7NLlsCcXtysW+tPQt1UzN0JQxoAV96h4+2MeCw3ADylpT3nNT00Yrq",
   server: false
 
