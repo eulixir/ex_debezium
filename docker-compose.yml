@@ -16,7 +16,7 @@ services:
     links:
       - core_db
     volumes:
-      - .:/app
+      - ./core:/app
       - core_build:/app/_build/
       - core_deps:/app/deps
     env_file:
@@ -38,7 +38,7 @@ services:
     links:
       - help_desk_db
     volumes:
-      - .:/app
+      - ./help_desk:/app
       - help_desk_build:/app/_build/
       - help_desk_deps:/app/deps
     env_file:
@@ -47,7 +47,7 @@ services:
   core_db:
     container_name: core_db
     restart: always
-    image: postgres:13.5
+    image: debezium/postgres
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
@@ -61,7 +61,7 @@ services:
   help_desk_db:
     container_name: help_desk_db
     restart: always
-    image: postgres:13.5
+    image: debezium/postgres
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
@@ -73,12 +73,12 @@ services:
       - ./dump:/home/
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.5.3
+    image: confluentinc/cp-zookeeper:7.2.1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
-    image: confluentinc/cp-enterprise-kafka:5.5.3
+    image: confluentinc/cp-enterprise-kafka:7.2.1
     depends_on: [zookeeper]
     environment:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
