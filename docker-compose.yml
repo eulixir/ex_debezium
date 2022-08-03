@@ -1,9 +1,82 @@
 version: "3.7"
 services:
+
+  core:
+    build:
+      context: ./core
+      target: build
+    command: mix phx.server
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    expose:
+      - "4000"
+    depends_on:
+      - core_db
+    links:
+      - core_db
+    volumes:
+      - .:/app
+      - core_build:/app/_build/
+      - core_deps:/app/deps
+    env_file:
+      - .env
+
+  help_desk:
+    build:
+      context: ./help_desk
+      target: build
+      dockerfile: Dockerfile
+    command: mix phx.server
+    restart: unless-stopped
+    ports:
+      - "4001:4000"
+    expose:
+      - "4001"
+    depends_on:
+      - help_desk_db
+    links:
+      - help_desk_db
+    volumes:
+      - .:/app
+      - help_desk_build:/app/_build/
+      - help_desk_deps:/app/deps
+    env_file:
+      - .env
+
+  core_db:
+    container_name: core_db
+    restart: always
+    image: postgres:13.5
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: core_dev
+    # ports:
+      # - "5432:5432"
+    volumes:
+      - postgres_core:/var/lib/postgresql/data/
+      - ./dump:/home/
+
+  help_desk_db:
+    container_name: help_desk_db
+    restart: always
+    image: postgres:13.5
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: help_desk_dev
+    # ports:
+      # - "5434:5432"
+    volumes:
+      - postgres_help_desk:/var/lib/postgresql/data/
+      - ./dump:/home/
+
   zookeeper:
     image: confluentinc/cp-zookeeper:5.5.3
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+
   kafka:
     image: confluentinc/cp-enterprise-kafka:5.5.3
     depends_on: [zookeeper]
@@ -15,6 +88,7 @@ services:
       KAFKA_JMX_PORT: 9991
     ports:
     - 9092:9092
+
   debezium:
     image: debezium/connect:1.4
     environment:
@@ -24,15 +98,14 @@ services:
       OFFSET_STORAGE_TOPIC: connect_offsets
       KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
       VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
     depends_on: [kafka]
     ports:
       - 8083:8083
-  schema-registry:
-    image: confluentinc/cp-schema-registry:5.5.3
-    environment:
-     - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
-     - SCHEMA_REGISTRY_HOST_NAME=schema-registry
-     - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081,http://localhost:8081
-    depends_on: [zookeeper, kafka]
+
+volumes:
+  core_build:
+  core_deps:
+  postgres_core:
+  postgres_help_desk:
+  help_desk_build:
+  help_desk_deps:

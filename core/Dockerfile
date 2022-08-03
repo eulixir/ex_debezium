@@ -14,6 +14,7 @@ ARG MIX_ENV=dev
 
 RUN mix do local.hex --force, local.rebar --force
 
+
 COPY mix.exs mix.lock ./
 COPY config config
 
@@ -39,6 +40,7 @@ WORKDIR /app
 ARG MIX_ENV=prod
 COPY --from=build /app/_build/$MIX_ENV/rel/core ./
 
+RUN ls
 # start application
 COPY start.sh ./
 CMD ["sh", "./start.sh"]
