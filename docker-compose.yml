@@ -12,17 +12,15 @@ services:
     expose:
       - "4000"
     depends_on:
-      - core_db
+      - postgres
     links:
-      - core_db
+      - postgres
     volumes:
       - ./core:/app
       - core_build:/app/_build/
       - core_deps:/app/deps
     env_file:
       - .env
-    networks:
-      - core_network
 
   # help_desk:
   #   build:
@@ -46,10 +44,10 @@ services:
   #   env_file:
   #     - .env
 
-  core_db:
+  postgres:
     container_name: core_db
     restart: always
-    image: debezium/postgres
+    image: debezium/postgres:13
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
@@ -58,11 +56,6 @@ services:
       - "5432:5432"
     expose:
       - "5432"
-    volumes:
-      - ./core/core:/var/lib/postgresql/data/
-      - ./dump:/home/
-    networks:
-      - core_network
 
   # help_desk_db:
   #   container_name: help_desk_db
@@ -82,8 +75,6 @@ services:
     image: confluentinc/cp-zookeeper:7.2.1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-    networks:
-     - core_network
 
   kafka:
     image: confluentinc/cp-enterprise-kafka:7.2.1
@@ -96,8 +87,6 @@ services:
       KAFKA_JMX_PORT: 9991
     ports:
       - 9092:9092
-    networks:
-      - core_network
 
   debezium:
     image: debezium/connect:1.4
@@ -113,8 +102,6 @@ services:
     depends_on: [kafka]
     ports:
       - 8083:8083
-    networks:
-      - core_network
 
   schema-registry:
     image: confluentinc/cp-schema-registry:5.5.3
@@ -129,13 +116,6 @@ services:
 volumes:
   core_build:
   core_deps:
-  core:
   help_desk:
   help_desk_build:
   help_desk_deps:
-
-networks:
-  core_network:
-    name: core_network
-  help_desk_network:
-    name: help_desk_network

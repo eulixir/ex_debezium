@@ -1,14 +1,14 @@
 {
-  "name": "core-2-connector",
+  "name": "core-connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "plugin.name": "pgoutput",
-    "database.hostname": "core_db",
+    "database.hostname": "postgres",
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "postgres",
     "database.dbname": "core_dev",
-    "database.server.name": "banana",
+    "database.server.name": "postgres",
     "table.include.list": "public.users"
   }
 }
